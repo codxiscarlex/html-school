@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<!-- saved from url=(0062)file:///C:/Users/PC/Desktop/web%20dev/first%20web%20site.html# -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>School Dashboard - Secure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fancy meta tags for enhanced appearance and sharing -->
+    <meta name="theme-color" content="#2d3e50">
+    <meta name="description" content="A modern, interactive School Dashboard for managing students, grades, attendance, exams, and academic progress.">
+    <meta property="og:title" content="School Dashboard - Academic Progress &amp; Exams">
+    <meta property="og:description" content="Analyze data, save academic progress, check results, and take exams in a stylish dashboard.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://img.icons8.com/color/96/000000/school.png">
+    <meta property="og:url" content="https://your-school-dashboard.example.com">
+    <link rel="icon" href="https://img.icons8.com/color/48/000000/school.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/96/000000/school.png">
+    <!-- Google Fonts for a modern look -->
+    <link href="./School Dashboard - Secure_files/css2" rel="stylesheet">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
+        header { background: #2d3e50; color: #fff; padding: 1rem 2rem; }
+        nav { background: #1a232f; color: #fff; display: flex; gap: 2rem; padding: 1rem 2rem; }
+        nav button { background: none; border: none; color: #fff; font-size: 1rem; cursor: pointer; }
+        nav button.active { border-bottom: 2px solid #fff; }
+        main { padding: 2rem; }
+        .hidden { display: none; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+        th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+        th { background: #e9ecef; }
+        .card { background: #fff; padding: 1rem; margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 2px 8px #0001; }
+        .flex { display: flex; gap: 2rem; }
+        .flex > * { flex: 1; }
+        input, select { padding: 0.5rem; margin-bottom: 1rem; width: 100%; }
+        button.primary { background: #2d3e50; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+        .logout { float: right; background: #c0392b; }
+        #auth-container { max-width: 400px; margin: 4rem auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px #0001; }
+        #auth-container h2 { margin-top: 0; }
+        .error { color: #c0392b; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div id="auth-container" class="">
+        <h2 id="auth-title">Register</h2>
+        <form id="login-form" class="hidden">
+            <input type="text" id="login-username" placeholder="Username" required="">
+            <input type="password" id="login-password" placeholder="Password" required="">
+            <button type="submit" class="primary">Login</button>
+            <div class="error" id="login-error"></div>
+        </form>
+        <form id="register-form" class="">
+            <input type="text" id="register-username" placeholder="Username" required="">
+            <input type="password" id="register-password" placeholder="Password" required="">
+            <input type="email" id="register-email" placeholder="Email" required="">
+            <input type="tel" id="register-phone" placeholder="Phone Number" required="">
+            <button type="submit" class="primary">Register</button>
+            <div class="error" id="register-error"></div>
+        </form>
+        <div>
+            <span id="toggle-auth" class="hidden">Don't have an account? <a href="file:///C:/Users/PC/Desktop/web%20dev/first%20web%20site.html#" onclick="toggleAuth(true)">Register</a></span>
+            <span id="toggle-auth-login" class="">Already have an account? <a href="file:///C:/Users/PC/Desktop/web%20dev/first%20web%20site.html#" onclick="toggleAuth(false)">Login</a></span>
+        </div>
+    </div>
+    <div id="app" class="hidden">
+        <header>
+            <span>School Dashboard</span>
+            <span id="user-info" style="margin-left:2rem;"></span>
+            <button class="logout primary" onclick="logout()">Logout</button>
+        </header>
+        <nav>
+            <button id="tab-dashboard" class="active" onclick="showTab(&#39;dashboard&#39;)">Dashboard</button>
+            <button id="tab-students" onclick="showTab(&#39;students&#39;)">Students</button>
+            <button id="tab-grades" onclick="showTab(&#39;grades&#39;)">Grades</button>
+            <button id="tab-attendance" onclick="showTab(&#39;attendance&#39;)">Attendance</button>
+            <button id="tab-announcements" onclick="showTab(&#39;announcements&#39;)">Announcements</button>
+        </nav>
+        <main>
+            <!-- Dashboard -->
+            <section id="dashboard">
+                <div class="flex">
+                    <div class="card">
+                        <h3>Total Students</h3>
+                        <div id="total-students">0</div>
+                    </div>
+                    <div class="card">
+                        <h3>Average Grade</h3>
+                        <div id="average-grade">0</div>
+                    </div>
+                    <div class="card">
+                        <h3>Attendance Rate</h3>
+                        <div id="attendance-rate">0%</div>
+                    </div>
+                </div>
+            </section>
+            <!-- Students -->
+            <section id="students" class="hidden">
+                <h2>Students</h2>
+                <form id="student-form">
+                    <input type="text" id="student-name" placeholder="Student Name" required="">
+                    <input type="text" id="student-class" placeholder="Class" required="">
+                    <button type="submit" class="primary">Add Student</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr><th>Name</th><th>Class</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="students-list"></tbody>
+                </table>
+            </section>
+            <!-- Grades -->
+            <section id="grades" class="hidden">
+                <h2>Grades</h2>
+                <form id="grade-form">
+                    <select id="grade-student" required=""></select>
+                    <input type="text" id="grade-subject" placeholder="Subject" required="">
+                    <input type="number" id="grade-score" placeholder="Score" min="0" max="100" required="">
+                    <button type="submit" class="primary">Add Grade</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr><th>Student</th><th>Subject</th><th>Score</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="grades-list"></tbody>
+                </table>
+            </section>
+            <!-- Attendance -->
+            <section id="attendance" class="hidden">
+                <h2>Attendance</h2>
+                <form id="attendance-form">
+                    <select id="attendance-student" required=""></select>
+                    <input type="date" id="attendance-date" required="">
+                    <select id="attendance-status" required="">
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                    </select>
+                    <button type="submit" class="primary">Mark Attendance</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr><th>Student</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="attendance-list"></tbody>
+                </table>
+            </section>
+            <!-- Announcements -->
+            <section id="announcements" class="hidden">
+                <h2>Announcements</h2>
+                <form id="announcement-form">
+                    <input type="text" id="announcement-title" placeholder="Title" required="">
+                    <input type="text" id="announcement-content" placeholder="Content" required="">
+                    <button type="submit" class="primary">Post Announcement</button>
+                </form>
+                <ul id="announcements-list"></ul>
+            </section>
+        </main>
+    </div>
+    <script>
+        // --- Authentication ---
+        let users = JSON.parse(localStorage.getItem('users') || '[]');
+        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+        function showApp(loggedIn) {
+            document.getElementById('app').classList.toggle('hidden', !loggedIn);
+            document.getElementById('auth-container').classList.toggle('hidden', loggedIn);
+            if (loggedIn && currentUser) {
+                document.getElementById('user-info').textContent =
+                    `Logged in as: ${currentUser.username} | Email: ${currentUser.email} | Phone: ${currentUser.phone}`;
+            }
+        }
+
+        function toggleAuth(isRegister) {
+            document.getElementById('login-form').classList.toggle('hidden', isRegister);
+            document.getElementById('register-form').classList.toggle('hidden', !isRegister);
+            document.getElementById('auth-title').textContent = isRegister ? 'Register' : 'Login';
+            document.getElementById('toggle-auth').classList.toggle('hidden', isRegister);
+            document.getElementById('toggle-auth-login').classList.toggle('hidden', !isRegister);
+            document.getElementById('login-error').textContent = '';
+            document.getElementById('register-error').textContent = '';
+        }
+
+        document.getElementById('login-form').onsubmit = function(e) {
+            e.preventDefault();
+            let username = document.getElementById('login-username').value.trim();
+            let password = document.getElementById('login-password').value;
+            let user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showApp(true);
+                renderAll();
+            } else {
+                document.getElementById('login-error').textContent = 'Invalid username or password.';
+            }
+        };
+
+        document.getElementById('register-form').onsubmit = function(e) {
+            e.preventDefault();
+            let username = document.getElementById('register-username').value.trim();
+            let password = document.getElementById('register-password').value;
+            let email = document.getElementById('register-email').value.trim();
+            let phone = document.getElementById('register-phone').value.trim();
+            if (users.some(u => u.username === username)) {
+                document.getElementById('register-error').textContent = 'Username already exists.';
+                return;
+            }
+            let user = { username, password, email, phone };
+            users.push(user);
+            localStorage.setItem('users', JSON.stringify(users));
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showApp(true);
+            renderAll();
+        };
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            showApp(false);
+        }
+
+        // --- Dashboard Data ---
+        let students = JSON.parse(localStorage.getItem('students') || '[]');
+        let grades = JSON.parse(localStorage.getItem('grades') || '[]');
+        let attendance = JSON.parse(localStorage.getItem('attendance') || '[]');
+        let announcements = JSON.parse(localStorage.getItem('announcements') || '[]');
+
+        function saveData() {
+            localStorage.setItem('students', JSON.stringify(students));
+            localStorage.setItem('grades', JSON.stringify(grades));
+            localStorage.setItem('attendance', JSON.stringify(attendance));
+            localStorage.setItem('announcements', JSON.stringify(announcements));
+        }
+
+        // Tab navigation
+        function showTab(tab) {
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(tab).classList.remove('hidden');
+            if(tab === 'grades' || tab === 'attendance') updateStudentSelects();
+            updateDashboard();
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            document.getElementById('total-students').textContent = students.length;
+            let avg = 0;
+            if(grades.length) {
+                avg = grades.reduce((a, b) => a + Number(b.score), 0) / grades.length;
+                avg = avg.toFixed(2);
+            }
+            document.getElementById('average-grade').textContent = avg;
+            let present = attendance.filter(a => a.status === 'Present').length;
+            let rate = attendance.length ? (present / attendance.length * 100).toFixed(1) : 0;
+            document.getElementById('attendance-rate').textContent = rate + '%';
+        }
+
+        // Students
+        function renderStudents() {
+            let tbody = document.getElementById('students-list');
+            tbody.innerHTML = '';
+            students.forEach((s, i) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${s.name}</td><td>${s.class}</td>
+                    <td><button onclick="deleteStudent(${i})">Delete</button></td>`;
+                tbody.appendChild(tr);
+            });
+            updateStudentSelects();
+            updateDashboard();
+        }
+        document.getElementById('student-form').onsubmit = function(e) {
+            e.preventDefault();
+            let name = document.getElementById('student-name').value.trim();
+            let cls = document.getElementById('student-class').value.trim();
+            if(name && cls) {
+                students.push({name, class: cls});
+                saveData();
+                renderStudents();
+                this.reset();
+            }
+        };
+        function deleteStudent(idx) {
+            let student = students[idx];
+            students.splice(idx, 1);
+            grades = grades.filter(g => g.student !== student.name);
+            attendance = attendance.filter(a => a.student !== student.name);
+            saveData();
+            renderStudents();
+            renderGrades();
+            renderAttendance();
+            updateDashboard();
+        }
+
+        // Grades
+        function renderGrades() {
+            let tbody = document.getElementById('grades-list');
+            tbody.innerHTML = '';
+            grades.forEach((g, i) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${g.student}</td><td>${g.subject}</td><td>${g.score}</td>
+                    <td><button onclick="deleteGrade(${i})">Delete</button></td>`;
+                tbody.appendChild(tr);
+            });
+            updateDashboard();
+        }
+        document.getElementById('grade-form').onsubmit = function(e) {
+            e.preventDefault();
+            let student = document.getElementById('grade-student').value;
+            let subject = document.getElementById('grade-subject').value.trim();
+            let score = document.getElementById('grade-score').value;
+            if(student && subject && score) {
+                grades.push({student, subject, score});
+                saveData();
+                renderGrades();
+                this.reset();
+            }
+        };
+        function deleteGrade(idx) {
+            grades.splice(idx, 1);
+            saveData();
+            renderGrades();
+            updateDashboard();
+        }
+
+        // Attendance
+        function renderAttendance() {
+            let tbody = document.getElementById('attendance-list');
+            tbody.innerHTML = '';
+            attendance.forEach((a, i) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${a.student}</td><td>${a.date}</td><td>${a.status}</td>
+                    <td><button onclick="deleteAttendance(${i})">Delete</button></td>`;
+                tbody.appendChild(tr);
+            });
+            updateDashboard();
+        }
+        document.getElementById('attendance-form').onsubmit = function(e) {
+            e.preventDefault();
+            let student = document.getElementById('attendance-student').value;
+            let date = document.getElementById('attendance-date').value;
+            let status = document.getElementById('attendance-status').value;
+            if(student && date && status) {
+                attendance.push({student, date, status});
+                saveData();
+                renderAttendance();
+                this.reset();
+            }
+        };
+        function deleteAttendance(idx) {
+            attendance.splice(idx, 1);
+            saveData();
+            renderAttendance();
+            updateDashboard();
+        }
+
+        // Announcements
+        function renderAnnouncements() {
+            let ul = document.getElementById('announcements-list');
+            ul.innerHTML = '';
+            announcements.forEach((a, i) => {
+                let li = document.createElement('li');
+                li.innerHTML = `<strong>${a.title}:</strong> ${a.content} 
+                    <button onclick="deleteAnnouncement(${i})">Delete</button>`;
+                ul.appendChild(li);
+            });
+        }
+        document.getElementById('announcement-form').onsubmit = function(e) {
+            e.preventDefault();
+            let title = document.getElementById('announcement-title').value.trim();
+            let content = document.getElementById('announcement-content').value.trim();
+            if(title && content) {
+                announcements.unshift({title, content});
+                saveData();
+                renderAnnouncements();
+                this.reset();
+            }
+        };
+        function deleteAnnouncement(idx) {
+            announcements.splice(idx, 1);
+            saveData();
+            renderAnnouncements();
+        }
+
+        // Update student selects for grades/attendance
+        function updateStudentSelects() {
+            let gradeSel = document.getElementById('grade-student');
+            let attSel = document.getElementById('attendance-student');
+            gradeSel.innerHTML = attSel.innerHTML = '';
+            students.forEach(s => {
+                let opt1 = document.createElement('option');
+                opt1.value = s.name;
+                opt1.textContent = s.name;
+                gradeSel.appendChild(opt1);
+                let opt2 = document.createElement('option');
+                opt2.value = s.name;
+                opt2.textContent = s.name;
+                attSel.appendChild(opt2);
+            });
+        }
+
+        // Initial render
+        function renderAll() {
+            renderStudents();
+            renderGrades();
+            renderAttendance();
+            renderAnnouncements();
+            updateDashboard();
+            updateStudentSelects();
+        }
+
+        // On load
+        if (currentUser) {
+            showApp(true);
+            renderAll();
+        } else {
+            showApp(false);
+        }
+    </script>
+
+</body></html>
